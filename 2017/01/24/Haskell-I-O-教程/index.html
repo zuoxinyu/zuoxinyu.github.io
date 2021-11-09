@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon.ico">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/all.min.css" integrity="sha256-mUZM63G8m73Mcidfrv5E+Y61y7a12O5mW4ezU3bxqW4=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"zuoxinyu.xyz","root":"/","images":"/images","scheme":"Mist","darkmode":false,"version":"8.8.1","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Suche...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js"></script>
+<meta name="description" content="本文译自https:&#x2F;&#x2F;www.vex.net&#x2F;~trebla&#x2F;haskell&#x2F;IO.xhtmlAuthor: Albert Y.C.Lai trebla@vex.netTranslator: ZuoXinyu iamzuoxinyu@gmail.com本文经原作者授权翻译，转载需注明来源。  这篇Haskell I&#x2F;O 教程始自于我为Haskell Wiki 写的Haskell Wiki -">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Haskell I&#x2F;O 教程">
+<meta property="og:url" content="http://zuoxinyu.xyz/2017/01/24/Haskell-I-O-%E6%95%99%E7%A8%8B/index.html">
+<meta property="og:site_name" content="世界上所有孤独而沉默的兽">
+<meta property="og:description" content="本文译自https:&#x2F;&#x2F;www.vex.net&#x2F;~trebla&#x2F;haskell&#x2F;IO.xhtmlAuthor: Albert Y.C.Lai trebla@vex.netTranslator: ZuoXinyu iamzuoxinyu@gmail.com本文经原作者授权翻译，转载需注明来源。  这篇Haskell I&#x2F;O 教程始自于我为Haskell Wiki 写的Haskell Wiki -">
+<meta property="og:locale">
+<meta property="article:published_time" content="2017-01-24T10:29:12.000Z">
+<meta property="article:modified_time" content="2017-12-17T09:06:51.000Z">
+<meta property="article:author" content="ZuoXinyu">
+<meta property="article:tag" content="Haskell">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://zuoxinyu.xyz/2017/01/24/Haskell-I-O-%E6%95%99%E7%A8%8B/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh","comments":true,"permalink":"http://zuoxinyu.xyz/2017/01/24/Haskell-I-O-%E6%95%99%E7%A8%8B/","path":"2017/01/24/Haskell-I-O-教程/","title":"Haskell I/O 教程"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Haskell I/O 教程 | 世界上所有孤独而沉默的兽</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-65671472-1"></script>
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"UA-65671472-1","only_pageview":false}</script>
+  <script src="/js/third-party/analytics/google-analytics.js"></script>
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Navigationsleiste an/ausschalten" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">世界上所有孤独而沉默的兽</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">In solitude we are least alone</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Startseite</a></li>
+        <li class="menu-item menu-item-about"><a href="/about/" rel="section">Über</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Inhaltsverzeichnis
+        </li>
+        <li class="sidebar-nav-overview">
+          Übersicht
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%A7%E7%BA%B2"><span class="nav-number">1.</span> <span class="nav-text">大纲</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86"><span class="nav-number">2.</span> <span class="nav-text">预备知识</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#I-O%E5%8A%A8%E4%BD%9C%E7%B1%BB%E5%9E%8B"><span class="nav-number">3.</span> <span class="nav-text">I&#x2F;O动作类型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%9D%E6%AD%A5%E7%A4%BA%E4%BE%8B"><span class="nav-number">4.</span> <span class="nav-text">初步示例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E4%BC%A0%E9%80%92%E5%92%8C%E5%A4%8D%E5%90%88%E5%8A%A8%E4%BD%9C"><span class="nav-number">5.</span> <span class="nav-text">数据传递和复合动作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%AA%E6%98%AF%E4%BC%A0%E9%80%92%E8%80%8C%E5%B7%B2"><span class="nav-number">6.</span> <span class="nav-text">只是传递而已</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Do-Notation"><span class="nav-number">7.</span> <span class="nav-text">Do-Notation</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1%E3%80%81%E7%BB%84%E7%BB%87%E5%92%8C%E6%9E%B6%E6%9E%84"><span class="nav-number">8.</span> <span class="nav-text">程序设计、组织和架构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%80%E5%90%8E%E4%B8%80%E4%B8%AA%E6%93%8D%E4%BD%9C%E7%AC%A6"><span class="nav-number">9.</span> <span class="nav-text">最后一个操作符</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%83%B0%E6%80%A7%E8%BF%98%E6%98%AF%E9%9D%9E%E6%83%B0%E6%80%A7"><span class="nav-number">10.</span> <span class="nav-text">惰性还是非惰性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Monad%E6%95%99%E7%A8%8B"><span class="nav-number">11.</span> <span class="nav-text">Monad教程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%93%E8%AF%AD"><span class="nav-number">12.</span> <span class="nav-text">结语</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">ZuoXinyu</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">13</span>
+          <span class="site-state-item-name">Artikel</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">Kategorien</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">schlagwörter</span>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/zuoxinyu" title="Github → https:&#x2F;&#x2F;github.com&#x2F;zuoxinyu" rel="noopener" target="_blank">Github</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://twitter.com/zuoxinyu" title="Twitter → https:&#x2F;&#x2F;twitter.com&#x2F;zuoxinyu" rel="noopener" target="_blank">Twitter</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh">
+    <link itemprop="mainEntityOfPage" href="http://zuoxinyu.xyz/2017/01/24/Haskell-I-O-%E6%95%99%E7%A8%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="ZuoXinyu">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="世界上所有孤独而沉默的兽">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Haskell I/O 教程
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Veröffentlicht am</span>
+
+      <time title="Erstellt: 2017-01-24 18:29:12" itemprop="dateCreated datePublished" datetime="2017-01-24T18:29:12+08:00">2017-01-24</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">Bearbeitet am</span>
+        <time title="Geändert am: 2017-12-17 17:06:51" itemprop="dateModified" datetime="2017-12-17T17:06:51+08:00">2017-12-17</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">in</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Haskell/" itemprop="url" rel="index"><span itemprop="name">Haskell</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <blockquote>
+<p>本文译自<a target="_blank" rel="noopener" href="https://www.vex.net/~trebla/haskell/IO.xhtml">https://www.vex.net/~trebla/haskell/IO.xhtml</a><br>Author: Albert Y.C.Lai <a href="mailto:trebla@vex.net">trebla@vex.net</a><br>Translator: ZuoXinyu <a href="mailto:iamzuoxinyu@gmail.com">iamzuoxinyu@gmail.com</a><br>本文经原作者授权翻译，转载需注明来源。</p>
+</blockquote>
+<p>这篇Haskell I/O 教程始自于我为Haskell Wiki 写的<a target="_blank" rel="noopener" href="http://www.haskell.org/haskellwiki/A_brief_introduction_to_Haskell#I.2FO">Haskell Wiki - A Brief Introduction to Haskell - I/O</a>.之所以将这篇文章发布在我的个人网站而不是在Haskell Wiki更新：</p>
+<ul>
+<li>Haskell Wiki的格式缺乏可拓展性。</li>
+<li>Haskell Wiki的渲染出了问题，很难修复。并不是针对它，但它的确有所限制。我也需要更自由的表达方式。</li>
+<li>我们知道如何避免失效的渲染：不用 <code>&lt;hask&gt;</code> 标记Haskell代码，只需要旧的<code>&lt;code&gt;</code>代替。但是仍然有太多需要修复的问题。</li>
+<li>我尝试过去修复我在Haskell Wiki页面上写过的别的文章。但是总有那么些顽固的Do-gooders会将标签改回<code>&lt;hask&gt;</code>，理由是代码高亮对他们来说是<code>oh-so-important</code>。我已经厌倦于修复这些损坏和教育那些家伙了————事实上如果他们再不校对并且注意那些他们自己造成的失败的渲染，如果他们只着眼于他们聪明的代码高亮，我将永远离开那里。</li>
+</ul>
+<span id="more"></span>
+<h2 id="大纲"><a href="#大纲" class="headerlink" title="大纲"></a>大纲</h2><ul>
+<li><a href="#%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86">预备知识</a></li>
+<li><a href="#I-O%E5%8A%A8%E4%BD%9C%E7%B1%BB%E5%9E%8B">I/O动作类型</a></li>
+<li><a href="#%E5%88%9D%E6%AD%A5%E7%A4%BA%E4%BE%8B">初步示例</a></li>
+<li><a href="#%E6%95%B0%E6%8D%AE%E4%BC%A0%E9%80%92%E5%92%8C%E5%A4%8D%E5%90%88%E5%8A%A8%E4%BD%9C">数据传递和复合动作</a></li>
+<li><a href="#%E5%8F%AA%E6%98%AF%E4%BC%A0%E9%80%92%E8%80%8C%E5%B7%B2">只是传递而已</a></li>
+<li><a href="#Do-Notation">Do-Notation</a></li>
+<li><a href="#%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1%E3%80%81%E7%BB%84%E7%BB%87%E5%92%8C%E6%9E%B6%E6%9E%84">程序设计、组织和架构</a></li>
+<li><a href="#%E6%9C%80%E5%90%8E%E4%B8%80%E4%B8%AA%E6%93%8D%E4%BD%9C%E7%AC%A6">最后一个操作符</a></li>
+<li><a href="#%E6%83%B0%E6%80%A7%E8%BF%98%E6%98%AF%E9%9D%9E%E6%83%B0%E6%80%A7">惰性还是非惰性</a></li>
+<li><a href="#Monad%E6%95%99%E7%A8%8B">Monad教程</a></li>
+<li><a href="#%E7%BB%93%E8%AF%AD">结语</a></li>
+</ul>
+<h2 id="预备知识"><a href="#预备知识" class="headerlink" title="预备知识"></a>预备知识</h2><p>本文要求读者掌握以下知识：</p>
+<ul>
+<li>Lambda 表达式</li>
+<li>模式匹配</li>
+<li>能够阅读类型（Types）的能力。本文将会需要你翻译 <code>IO X -&gt; (X -&gt; IO Y) -&gt; IO Y</code>。我仅仅是说“翻译（parse）”。你不必理解 <code>IO X</code>代表什么（我会告诉你的），你只需要知道它如何是一个合法的类型。</li>
+<li>类型检测。重申一次，你不必总是去理解类型的意义，只需明白这只是一个匹配类型的文字游戏即可。</li>
+</ul>
+<h2 id="I-O动作类型"><a href="#I-O动作类型" class="headerlink" title="I/O动作类型"></a>I/O动作类型</h2><p>Haskell I/O动作有着自己的类型，形式为<code>IO X</code>。这个类型的意义和使用方法本文将逐步展开阐述。（它不可能靠一个外行人的三言两语就能总结出来；你现在所想的都是错误的。）但是我可以明确地告诉你为什么我们不使用别的语言，而仅用简单的<code>X</code>或<code>() -&gt; X</code>。</p>
+<p>在Haskell中，如果有 <code>g :: String</code>，那么<code>g</code>永远都只是同一个字符串。如果有<code>f :: () -&gt; String</code>，那么<code>f () :: String</code>也永远是同一个字符串。(译者注：注意<code>f :: () -&gt; String</code>是一个函数，而<code>f ()</code>是将<code>f</code>应用于<code>()</code>后柯里化的结果，其类型为<code>String</code>) <code>String</code>或<code>() -&gt; String</code>不完全可能是同一个“读取一行”的动作，因为在不同时间里，一个读取动作可能会给你不同的字符串。<em>此处翻译有不当之处</em></p>
+<p>当你输入“读取一行”的动作：<code>getLine :: IO String</code>，我们并不要求它每次返回的字符串是相同的。我们所要求的是，它永远都是同一个I/O动作。准确地说：每一次当你使用<code>getLine</code>时，它都是同一个“读取一行”的动作。</p>
+<p><code>IO a</code>类型享受着一种微妙的地位：一个程序的入口点，也就是<code>main</code>，必须是<code>IO a</code>类型的。这自然因为，整个程序都只是一些输入输出，以及，你同这个世界之间的相互作用。</p>
+<h2 id="初步示例"><a href="#初步示例" class="headerlink" title="初步示例"></a>初步示例</h2><p><code>putStrLn :: String -&gt; IO ()</code>是一个函数，而不是一个I/O动作，因为它的类型就是一个函数类型。然而，一旦你给它提供了一个字符串参数，你就得到了一个I/O动作：<code>putStrLn &quot;hello&quot;:: IO ()</code>. 这的确是一个I/O动作的类型。这个动作输出了<code>hello</code>。你可以将它用在<code>main</code>中：</p>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- put this in file r0.hs, compile and run, don&#x27;t walk</span></span><br><span class="line"><span class="title">main</span> :: <span class="type">IO</span> ()</span><br><span class="line">	main = putStrLn <span class="string">&quot;hello&quot;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> ghc r0.hs</span></span><br><span class="line">...</span><br><span class="line"><span class="meta">$</span><span class="bash">./r0</span></span><br><span class="line">hello</span><br></pre></td></tr></table></figure>
+
+<p><code>getLine:: IO String</code>已经是一个正确的类型，你可以将它用在别的程序中的<code>main</code>之中：</p>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- put this in file r1.hs, compile and run, don&#x27;t walk</span></span><br><span class="line"><span class="title">main</span> :: <span class="type">IO</span> ()</span><br><span class="line">	main = putStrLn <span class="string">&quot;Good morning&quot;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> ghc r1.hs</span></span><br><span class="line">...</span><br><span class="line"><span class="meta">$</span><span class="bash">./r1</span></span><br><span class="line">Good morning</span><br></pre></td></tr></table></figure>
+<p>如何拓展r1.hs以处理输入的行，更广泛地说，如何使用<code>IO a</code>中的<code>a</code>，如何构建复合动作，则是下一节将要介绍的主题。</p>
+<h2 id="数据传递和复合动作"><a href="#数据传递和复合动作" class="headerlink" title="数据传递和复合动作"></a>数据传递和复合动作</h2><p>怎样写一个程序，使用<code>getLine</code>读取一行，然后用<code>putStrLn</code>打印出来呢？</p>
+<p>失败尝试 #0: <code>putStrLn getLine</code> ————类型不匹配。<br>失败尝试 #1: 借助于一个“解包器” <code>stripIO :: IO String -&gt; String</code>，然后写<code>putStrLn (stripIO getLine)</code>.————类型正确，然而表现是错误的。就如我之前解释的，因为<code>stripIO getLine :: String</code>，每次你用到它，它都是同一个字符串，这跟“读取”这个动作矛盾。解包这个主意是个逻辑错误，无论你多喜欢它，必须放弃，你不该去解包。</p>
+<p>真正将如你所愿的，是将由<code>getLine</code>所读取的行传递给下游的处理器，比如一个<code>putStrLn</code>.</p>
+<p>我会用一个类比（虽然我一向反对类比）来解释这一切。我有一个收音机，从空中接收读取信号（类比为<code>getLine</code>）。我还有个扬声器，接受信号，然后放大音量（类比为<code>putStrLn</code>）。设想一下，我有个狡猾的计划，我打算用收音机接收信号，然后亲手去解读这些信号。然后我打算亲手将信号输入到扬声器中。这是个狡猾的计划还是个愚蠢的计划呢？显然，这是个愚蠢的计划，正如别的语言曾让你做过的种种，（你的手就好比状态变量），而你又在Haskell中重蹈覆辙。为什么不用一条线将收音机和扬声器连起来呢？做了这些，就能解放我的双手了。而这正是Haskell将让你做的。</p>
+<p>这条线就是 <code>(&gt;&gt;=)</code>。用英文说就是”bind”。使用的方法如下：</p>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- put this in file b0.hs, compile and run, enter a line</span></span><br><span class="line"><span class="title">main</span> :: <span class="type">IO</span> ()</span><br><span class="line">	main = getLine</span><br><span class="line">	       &gt;&gt;=</span><br><span class="line">		   putStrLn</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> ghc b0.hs</span></span><br><span class="line">...</span><br><span class="line"><span class="meta">$</span><span class="bash"> ./b0</span></span><br><span class="line">Good morning</span><br><span class="line">Good morning</span><br></pre></td></tr></table></figure>
+
+<p>感受一下，先看一下类型和怎么匹配的。<code>(&gt;&gt;=)</code>的类型是</p>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(&gt;&gt;=) :: <span class="type">IO</span> a -&gt; (a -&gt; <span class="type">IO</span> b) -&gt; <span class="type">IO</span> b</span><br></pre></td></tr></table></figure>
+<p>这个类型有点长，不要害怕，冷静下来分析一下。</p>
+<ul>
+<li><code>(&gt;&gt;=)</code>需要两个参数。</li>
+<li>第一个参数的类型是<code>IO a</code>，而我们给了它<code>getLine :: IO String</code>，匹配成功，类型匹配过程为<code>a = String</code>。</li>
+<li>第二个参数的类型是<code>a -&gt; IO b</code>，而我们给了它<code>putStrLn :: String -&gt; IO ()</code>，类型也匹配： <code>b = ()</code>.</li>
+<li>因此，整个<code>getLine &gt;&gt;= putStrLn</code>的类型匹配成功，类型为 <code>IO b = IO ()</code>。</li>
+</ul>
+<blockquote>
+<p>确切地说，(&gt;&gt;=)的类型是个更抽象，更广义的类型，它是个<code>Monad m =&gt; m a -&gt; (a -&gt; m b) -&gt; m b</code>。但今天我们仅仅讨论比较狭义的<code>IO</code>，本文着眼于I/O，而不是更抽象更广义的monads。</p>
+</blockquote>
+<p>注意这些类型，现在它的行为是：</p>
+<ul>
+<li><code>getLine &gt;&gt;= putStrLn</code>是一个复合动作，由两个子动作组成，它会执行下列顺序的动作。</li>
+<li>第一个动作是<code>getLine</code>。</li>
+<li>第二个动作的执行需要一个字符串。回想一下单独的<code>putStrLn</code>并不是一个动作，而是类型为<code>String -&gt; IO ()</code>的函数，为这个函数提供一个字符串，就得到了一个动作。</li>
+<li>但字符串是哪个呢？好吧，第一个动作从外部世界读取了一行，这就是字符串。</li>
+<li>有时候我更愿意用这种方式解释：<code>(getLine &gt;&gt;=)</code>是一个独立的单元，你需要给它一个回调函数。在这个例子里，这个回调函数就是<code>putStrLn</code>。执行过程是：读取一行，然后调用回调函数去处理作为参数的行。</li>
+</ul>
+<p>回显一个字符串太无聊了。怎样写一个程序，读取一行，然后在这个行的前面添加一句”You have entered:”呢？</p>
+<p>有两种方式。这一节展示了一种方法，第二种方法在<a href="#%E5%8F%AA%E6%98%AF%E4%BC%A0%E9%80%92%E8%80%8C%E5%B7%B2">下一节</a>中展示。两种方法的区别是：你是想在读取阶段还是想在输出阶段添加这个前缀呢？（我不会暗示哪种方式更好。我展示了两种方法是因为两种方法都会教你一些新的东西。你自己决定使用哪种方法合适。）这一节展示的方法是在输出阶段时添加的前缀。</p>
+<p>一个技巧是，你也可以将这个回调函数写成一个lambda表达式（或者你写的任何一个函数），只要类型是正确的。这个回调函数会为<code>putStrLn</code>提供一个字符串类型的参数。可以是：</p>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">\s -&gt; putStrLn (<span class="string">&quot;You have entered: &quot;</span> ++ s)</span><br></pre></td></tr></table></figure>
+
+<p>检查一下，类型依然匹配：<code>String -&gt; IO ()</code>。然后：</p>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- put this in file b1.hs, compile and run, enter a line</span></span><br><span class="line"><span class="title">main</span> :: <span class="type">IO</span> ()</span><br><span class="line">	main = getLine</span><br><span class="line">	       &gt;&gt;=</span><br><span class="line">		   \s -&gt; putStrLn (<span class="string">&quot;You have entered: &quot;</span> ++ s)</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> ghc b1.hs</span></span><br><span class="line">...</span><br><span class="line"><span class="meta">$</span><span class="bash"> ./b1</span></span><br><span class="line">Good morning</span><br><span class="line">You have entered: Good morning</span><br></pre></td></tr></table></figure>
+
+<p>一旦你知道如何用两个子动作构建一个复合动作，你也就知道了怎样构建一个由更多子动作组成的复合动作。技巧是在回调函数中使用更多的的<code>(&gt;&gt;=)</code>。猜想一下下面这个程序的输出，然后检验一下：</p>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- put this file in b2.hs, compile and run, enter two lines</span></span><br><span class="line"><span class="title">main</span> :: <span class="type">IO</span> ()</span><br><span class="line">	main = putStrLn <span class="string">&quot;Enter a line:&quot;</span></span><br><span class="line">		   &gt;&gt;=</span><br><span class="line">		   \_ -&gt; getLine</span><br><span class="line">				 &gt;&gt;=</span><br><span class="line">				 \s0 -&gt; putStrLn <span class="string">&quot;Enter one last line:&quot;</span></span><br><span class="line">						&gt;&gt;=</span><br><span class="line">						\_ -&gt; getLine</span><br><span class="line">							  &gt;&gt;=</span><br><span class="line">							  \s1 -&gt; putStrLn (<span class="string">&quot;Total length: &quot;</span> ++ show (length (s0 ++ s1)))</span><br><span class="line"><span class="comment">-- this code layout is only educational, for showing theoretical structure</span></span><br></pre></td></tr></table></figure>
+
+<p>上面代码的格式仅用于教学目的。下面的<a href="#Do-Notation">Do-Notation</a>一节将会展示用于实践时的格式。Do-Notation会把你从无尽地重复&gt;&gt;=中解救出来。</p>
+<p>是时候说说类型，例如<code>IO String</code>的具体含义了。你已经知道了它代表一个I/O动作。那么这个<code>String</code>在这里是什么呢？凭直觉而言，“I/O动作返回了一个字符串”。这句话有时候正确，有时候错误。我不想模棱两可地趟这趟浑水。我更愿意这么说：</p>
+<p><code>act1 :: IO String</code>的类型意味着：<code>act1</code>是一个I/O动作，至于其中的<code>String</code>这一部分：在<code>act1 &gt;&gt;= callback2</code>中，一个字符串被传递给了<code>callback2</code>。我没有说“返回”了什么，我说的是“传递”字符串给了回调函数。这样说在任何时候都是无懈可击的。这就是我为什么更喜欢用回调函数的说法来解释。</p>
+<p><code>putStrLn s :: IO ()</code>的意思是：在<code>putStrLn s &gt;&gt;= callback3</code>中，一个乏味的<code>()</code>被传递给了回调函数。这是因为这个输出动作实际上并没有给回调函数传递任何有意义的信息，因而，<code>()</code>是正确无误的。你已经在例子中看到我是如何写<code>callback3</code>的。</p>
+<h2 id="只是传递而已"><a href="#只是传递而已" class="headerlink" title="只是传递而已"></a>只是传递而已</h2><p>怎样写一个程序，读取一行，然后在这个行的前面添加一句”You have entered:”呢？这次我们将在读取阶段添加它。</p>
+<p>这就需要借助于另一个库函数了：</p>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="title">return</span> :: a -&gt; <span class="type">IO</span> a</span><br></pre></td></tr></table></figure>
+<p>看看这个函数的名字，你一定在猜它的意思。好吧，它的名字是 “return”，又趟进了另一片浑水（甚至比上次更糟）。我确信你的猜想又是“有时候对有时候错”，而我就不会趟进这片浑水。我只能告诉你，这不过是一个巧合，这个词跟英语中的 “return” 碰巧押韵而已。</p>
+<blockquote>
+<p>这是个谎言，该死的谎言，是个意义丰富的词语。<br>对标准而言，好的是有太多标准可以选择。对意义丰富的词语来说，好的是这里有太多的意义可以选择。<br>实际上，这个类型要更抽象更广义： <code>return :: Monad m =&gt; a -&gt; m a</code>。</p>
+</blockquote>
+<p>它的行为是：例如 <code>return s</code>，带有一个参数，是个假的I/O动作——不做输入、输出，不改变任何事物——仅仅是将<code>s</code>传递给下一个回调函数（假如这个回调存在的话）。它唯一的作用就是帮你控制传递什么数据。这里有个例子用到了它：</p>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="title">getLine</span> &gt;&gt;= \s -&gt; return (<span class="string">&quot;You have entered: &quot;</span> ++ s)</span><br></pre></td></tr></table></figure>
+
+<p>这个例子所有的行为是：读取一行，然后——并非逐字传递——而是将整个行拦截下来并作为字符串参数传递给回调函数。</p>
+<p>一个完整的程序是：</p>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- put this in file p0.hs, compile and run, enter a line</span></span><br><span class="line"><span class="title">main</span> :: <span class="type">IO</span> ()</span><br><span class="line">	main = (getLine &gt;&gt;= \s -&gt; return (<span class="string">&quot;You have entered: &quot;</span> ++ s))</span><br><span class="line">	       &gt;&gt;=</span><br><span class="line">		   putStrLn</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> ghc p0.hs</span></span><br><span class="line">...</span><br><span class="line"><span class="meta">$</span><span class="bash"> ./p0</span></span><br><span class="line">Good morning</span><br><span class="line">You have entered: Good morning</span><br></pre></td></tr></table></figure>
+
+<p>不必每次都把代码写成这样。只是想象一下，你将整个“读取一行，然后把它作为字符串参数传递给回调函数”行为封装成一个独立可复用的单元，这样你就会理解地更深一些：</p>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- put this in file p1.hs, compile and run, enter a line</span></span><br><span class="line"><span class="title">main</span> :: <span class="type">IO</span> ()</span><br><span class="line"><span class="title">main</span> = getLine_and_prepend &gt;&gt;= putStrLn</span><br><span class="line"></span><br><span class="line"><span class="title">getLine_and_prepend</span> :: <span class="type">IO</span> <span class="type">String</span></span><br><span class="line"><span class="title">getLine_and_prepend</span> = getLine &gt;&gt;= \s -&gt; return (<span class="string">&quot;You have entered: &quot;</span> ++ s)</span><br></pre></td></tr></table></figure>
+
+<p>练习：检查类型匹配。永远都要检查类型是否匹配。</p>
+<p>如果你封装一个更复杂一些的复合动作，使传入的数据可选，这会让你感受到更多：</p>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- put this in file p2.hs</span></span><br><span class="line"><span class="title">main</span> :: <span class="type">IO</span> ()</span><br><span class="line">	main = get_email &gt;&gt;= putStrLn</span><br><span class="line"></span><br><span class="line">	get_email :: <span class="type">IO</span> <span class="type">String</span></span><br><span class="line">	get_email = putStrLn <span class="string">&quot;Enter email: &quot;</span>  &gt;&gt;= \_  -&gt;</span><br><span class="line">	            getLine                   &gt;&gt;= \s0 -&gt;</span><br><span class="line">				putStrLn <span class="string">&quot;Enter again: &quot;</span>  &gt;&gt;= \_  -&gt; </span><br><span class="line">				getLine                   &gt;&gt;= \s1 -&gt;</span><br><span class="line">				<span class="keyword">if</span> s0 /= s1 <span class="keyword">then</span></span><br><span class="line">					putStrLn <span class="string">&quot;Different. Re-enter.&quot;</span> &gt;&gt;= \_ -&gt;</span><br><span class="line">					get_email</span><br><span class="line">				<span class="keyword">else</span></span><br><span class="line">					return s0</span><br></pre></td></tr></table></figure>
+
+<h2 id="Do-Notation"><a href="#Do-Notation" class="headerlink" title="Do-Notation"></a>Do-Notation</h2><p>为了让I/O程序看起来更方便工整，Haskell提供了一个特殊的语法糖，我们称之为Do-Notation。下面的例子很好地展示了这个语法，你能从这个例子推出这个语法的形式。</p>
+<p>这段代码</p>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="title">act0</span>    &gt;&gt;= \x -&gt;</span><br><span class="line"><span class="comment">-- act1, act2 may use x</span></span><br><span class="line"><span class="title">act1</span>    &gt;&gt;= \_ -&gt;</span><br><span class="line"><span class="title">act2</span>    &gt;&gt;= \z -&gt;</span><br><span class="line"><span class="comment">-- act3 may use x,z</span></span><br><span class="line"><span class="title">act3</span></span><br></pre></td></tr></table></figure>
+
+<p>可以写成：</p>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="title">do</span> &#123; x &lt;- act0; act1; z &lt;- act2; act3  &#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以添加额外的分号。例如：</p>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="title">do</span> &#123; ; x &lt;- act0; act1; z &lt;- act2; act3;  &#125;</span><br></pre></td></tr></table></figure>
+
+<p>更方便的，也支持缩进语法：</p>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="title">do</span> x &lt;- act0</span><br><span class="line">   act1</span><br><span class="line">   z &lt;- act2</span><br><span class="line">   act3</span><br><span class="line"></span><br><span class="line"><span class="comment">-- or</span></span><br><span class="line"></span><br><span class="line"><span class="title">do</span></span><br><span class="line">   x &lt;- act0</span><br><span class="line">   act1</span><br><span class="line">   z &lt;- act2</span><br><span class="line">   act3</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>当你看到这个漂亮的格式，你就知道我要说什么了。因为Do-Notation仅仅是为了表示(&gt;&gt;=)，它能很好地组织I/O语句，当然也适用于所有的Monads实例。</p>
+</blockquote>
+<p>这是用Do-Notation重写的前面的例子：</p>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- put this in file d0.hs</span></span><br><span class="line"><span class="title">main</span> :: <span class="type">IO</span> ()</span><br><span class="line"><span class="title">main</span> = <span class="keyword">do</span> putStrLn <span class="string">&quot;Enter a line:&quot;</span></span><br><span class="line">	s0 &lt;- getLine</span><br><span class="line">	putStrLn <span class="string">&quot;Enter one last line:&quot;</span></span><br><span class="line">	s1 &lt;- getLine</span><br><span class="line">	putStrLn (<span class="string">&quot;Total length: &quot;</span> ++ show (length (s0 ++ s1)))</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- put this in file d1.hs</span></span><br><span class="line"><span class="title">main</span> :: <span class="type">IO</span> ()</span><br><span class="line"><span class="title">main</span> = <span class="keyword">do</span></span><br><span class="line">	s &lt;- get_email</span><br><span class="line">	putStrLn s</span><br></pre></td></tr></table></figure>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="title">get_email</span> :: <span class="type">IO</span> <span class="type">String</span></span><br><span class="line"><span class="title">get_email</span> = <span class="keyword">do</span></span><br><span class="line">	putStrLn <span class="string">&quot;Enter email: &quot;</span></span><br><span class="line">	s0 &lt;- getLine</span><br><span class="line">	putStrLn <span class="string">&quot;Enter again: &quot;</span></span><br><span class="line">	s1 &lt;- getLine</span><br><span class="line">	<span class="keyword">if</span> s0 /= s1 <span class="keyword">then</span></span><br><span class="line">		<span class="comment">-- you need to start a new &quot;do&quot; for this</span></span><br><span class="line">		<span class="keyword">do</span> putStrLn <span class="string">&quot;Different. Re-enter.&quot;</span></span><br><span class="line">			get_email</span><br><span class="line">		<span class="keyword">else</span></span><br><span class="line">			return s0</span><br></pre></td></tr></table></figure>
+
+<p>Do-Notation还有两个特性。其一，你可以在中间书写局部定义：</p>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="title">do</span> x &lt;- getLine</span><br><span class="line">   <span class="keyword">let</span> x1 = x ++ x</span><br><span class="line">       x2 = take <span class="number">10</span> x1</span><br><span class="line">   putStrLn x2</span><br></pre></td></tr></table></figure>
+
+<p>如下这种形式：</p>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="title">getLine</span> &gt;&gt;= \x -&gt; <span class="keyword">let</span> &#123;x1 = x ++ x; x2 = take <span class="number">10</span> x1 &#125;</span><br><span class="line">                  <span class="keyword">in</span> putStrLn x2</span><br></pre></td></tr></table></figure>
+
+<p>注意，一般来说，<code>let</code>之后一定要跟着<code>in</code>。但在Do-Notation中，就不能加这个<code>in</code>。</p>
+<p>这是使用<code>let</code>特性重写的<code>d0.hs</code>：</p>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- put this in file d2.hs</span></span><br><span class="line"><span class="title">main</span> :: <span class="type">IO</span> ()</span><br><span class="line"><span class="title">main</span> = <span class="keyword">do</span> putStrLn <span class="string">&quot;Enter a line:&quot;</span></span><br><span class="line">		  s0 &lt;- getLine</span><br><span class="line">		  putStrLn <span class="string">&quot;Enter one last line:&quot;</span></span><br><span class="line">		  s1 &lt;- getLine</span><br><span class="line">		  <span class="keyword">let</span> s = s0 ++ s1</span><br><span class="line">		  n = length s</span><br><span class="line">		  putStrLn (<span class="string">&quot;Total length: &quot;</span> ++ show n)</span><br></pre></td></tr></table></figure>
+
+<p>其二，你不必限制于<code>variable &lt;- action</code>这种形式。也可以使用<code>pattern &lt;- action</code>的形式。</p>
+<p>例如在System.IO中有这样一个函数：</p>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="title">openTempFile</span> :: <span class="type">FilePath</span> -&gt; <span class="type">String</span> -&gt; <span class="type">IO</span> (<span class="type">FilePath</span>, <span class="type">Handle</span>)</span><br></pre></td></tr></table></figure>
+<p>你可以用Do-Notation这样写：</p>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="title">do</span> </span><br><span class="line">    (path, handle) &lt;- openTempFile <span class="string">&quot;/tmp&quot;</span> <span class="string">&quot;gory.txt&quot;</span></span><br><span class="line">	hPutStrLn handle (<span class="string">&quot;I am &quot;</span> ++ path)</span><br><span class="line">	...</span><br></pre></td></tr></table></figure>
+
+<p>它的形式</p>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="title">openTempFile</span> <span class="string">&quot;/tmp&quot;</span> <span class="string">&quot;gory.txt&quot;</span> &gt;&gt;= \(path, handle) -&gt; hPutStrLn handle (<span class="string">&quot;I am &quot;</span> ++ path) &gt;&gt;= \_ -&gt; ...</span><br></pre></td></tr></table></figure>
+<p>是简化后的版本。若模式(pattern)是无穷的（non-exhaustive），你就需要了解完整的版本了。这里只是冰山一角。像下面：</p>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="title">do</span></span><br><span class="line">    x:xs &lt;- getLine</span><br><span class="line">	putchar x</span><br></pre></td></tr></table></figure>
+<p>如果字符串是空的，会发生什么呢？</p>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="title">getLine</span> &gt;&gt;= \y -&gt; <span class="keyword">case</span> y <span class="keyword">of</span></span><br><span class="line">                     x:xs -&gt; putChar x</span><br><span class="line">					 _ -&gt; fail <span class="string">&quot;compiler puts an error message here&quot;</span></span><br></pre></td></tr></table></figure>
+<p><code>fail :: String -&gt; IO a</code> 是另一个库函数。`fail “error message” 抛出一个给定的异常。所以，当字符串是空时，会发生什么呢？答案是：一个异常。你可以捕获这个异常从而使整个程序不至于终止，但那是<a target="_blank" rel="noopener" href="https://www.vex.net/~trebla/haskell/exception-tutorial.xhtml">另外一个教程</a>。</p>
+<p>尽管使用无穷模式（non-exhaustive patterns）的行为是可预知的，但最好不要依赖它。你要自觉地决定每个case的处理和反馈，小心翼翼地编码实现。你可以写你自己的<code>case</code>分支。这是我自己的：</p>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="title">loop</span> = <span class="keyword">do</span></span><br><span class="line">    s &lt;- getLine</span><br><span class="line">	<span class="keyword">case</span> s <span class="keyword">of</span></span><br><span class="line">	    x:xs -&gt; putChar x</span><br><span class="line">		[] -&gt; <span class="keyword">do</span></span><br><span class="line">		    putStrLn <span class="string">&quot;Re-enter&quot;</span></span><br><span class="line">			loop</span><br></pre></td></tr></table></figure>
+
+<h2 id="程序设计、组织和架构"><a href="#程序设计、组织和架构" class="headerlink" title="程序设计、组织和架构"></a>程序设计、组织和架构</h2><p>有一次我看到一个学生所写的丑陋的C++代码：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Complex</span> &#123;</span></span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">double</span> real, imag;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="title">Complex</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		cout &lt;&lt; <span class="string">&quot;please enter the real part: &quot;</span>;</span><br><span class="line">		cin &gt;&gt; real;</span><br><span class="line">		cout &lt;&lt; <span class="string">&quot;please enter the imaginary part&quot;</span>;</span><br><span class="line">		cin &gt;&gt; imag;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>我的观点是：不论你是在使用Haskell或者是别的什么语言，你必须清楚地划分你的程序中哪一部分是用来处理I/O，哪一部分是进行数据处理的。并且，数据处理的部分永远不要混入I/O操作，一丁点也不要有。</p>
+<p>在Haskell中，这种划分处理得颇为直接：I/O部分的类型含有<code>IO</code>，内部数据处理则没有。</p>
+<p>下面是一个典型的Haskell程序：输入一个字符串，计算串中’x’和’y’出现的次数：</p>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="title">main</span> :: <span class="type">IO</span> ()</span><br><span class="line"><span class="title">main</span> = <span class="keyword">do</span></span><br><span class="line">    inp &lt;- getLine</span><br><span class="line">	<span class="keyword">let</span> ans :: <span class="type">Int</span></span><br><span class="line">	    ans = calculate inp</span><br><span class="line">	print ans</span><br><span class="line"></span><br><span class="line"><span class="title">calculate</span> :: <span class="type">String</span> -&gt; <span class="type">Int</span></span><br><span class="line"><span class="title">calculate</span> s = length (filter (\c -&gt; c == &#x27;x&#x27; || c == &#x27;y&#x27;) s)</span><br></pre></td></tr></table></figure>
+
+<p>输入数据和打印结果需要I/O和<code>IO</code>类型；计算过程并不需要。</p>
+<h2 id="最后一个操作符"><a href="#最后一个操作符" class="headerlink" title="最后一个操作符"></a>最后一个操作符</h2><figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="title">putStrLn</span> <span class="string">&quot;hello&quot;</span> &gt;&gt;= \_ -&gt; act2</span><br></pre></td></tr></table></figure>
+<p>可以简化为：</p>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="title">putStrLn</span> <span class="string">&quot;hello&quot;</span> &gt;&gt; act2</span><br></pre></td></tr></table></figure>
+<p>这就是操作符<code>(&gt;&gt;)</code>的作用。简单地说就是：</p>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="title">act1</span> &gt;&gt; act2 = act1 &gt;&gt;= \_ -&gt; act2</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>按照惯例，<code>(&gt;&gt;)</code>也是个广义的操作符。</p>
+</blockquote>
+<h2 id="惰性还是非惰性"><a href="#惰性还是非惰性" class="headerlink" title="惰性还是非惰性"></a>惰性还是非惰性</h2><p>你或许听说过“Haskell是惰性的”。但这只是经验之谈。我今天所讨论的是I/O，在这个维度上，这个说法几乎是完全错误的。</p>
+<p>Haskell的I/O不是惰性的。在前面的部分里你也刚刚看到第一手证据。当你使用<code>getLine</code>的时候，计算机会立即让你输入一行数据，无论这一行是否必需。当你使用<code>putStrLn</code>时，计算机会立即将数据打印到屏幕上，无论打印这个行为是否必需。I/O是Haskell中着重强调的非惰性部分，在这里，你重新获得了对于“顺序”的掌控。</p>
+<blockquote>
+<p>有极少的异常情况：在库中，有些I/O函数是惰性的，但我没有提及这些，将来也不会提及。这些函数很难解释，也很难被正确地使用。也正因如此，在实际应用中，它们也极少被使用。所以不要担心，你并没有错过什么。<br>顺带一提，这些函数是<code>readFile</code>,<code>getContents</code>,<code>hGetContents</code>和<code>interact</code>。（译者注，这些函数并不少见，当然，对我个人而言。）</p>
+</blockquote>
+<p>如果你的程序需要推迟一个I/O动作，有一个比“惰性”更为通俗的解释。最常见的是标准缓冲区：终端里的行缓冲，文件的块缓冲。这些从Unix就已经成为里标准，我想MSDOS也是如此。如果需要的话，System.IO提供了显示刷新和配置缓冲区的工具。</p>
+<h2 id="Monad教程"><a href="#Monad教程" class="headerlink" title="Monad教程"></a>Monad教程</h2><p>对I/O编程而言，你并不需要理解广义的Monad。但如果你对Monad抱有郑重其事的兴趣，这当然是极好的。若你有闲暇，可以参考我的另一篇教程<a target="_blank" rel="noopener" href="https://www.vex.net/~trebla/haskell/Monad.xhtml">Monad教程</a>。</p>
+<h2 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h2><p>这只是一篇教程，关于它的不完整其实是我有意为之。这只是一个开始，标准库里还有许多I/O动作和函数等待你去使用和练习。标准库中还有许多设计抉择、组织方式和实现方法。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Haskell/" rel="tag"># Haskell</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2016/10/30/%E5%B7%A6%E5%8F%B3/" rel="prev" title="左右">
+                  <i class="fa fa-chevron-left"></i> 左右
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2018/01/01/%E5%B0%84%E5%90%91%E8%99%9A%E6%97%A0%E7%9A%84%E5%AD%90%E5%BC%B9/" rel="next" title="射向虚无的子弹">
+                  射向虚无的子弹 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">ZuoXinyu</span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>
